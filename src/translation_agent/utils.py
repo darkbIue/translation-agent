@@ -8,9 +8,10 @@ from icecream import ic
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-load_dotenv()  # read local .env file
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+# load_dotenv()  # read local .env file
+client = openai.OpenAI(api_key="your key",base_url="https://api.deepseek.com")
+#   openai.api_request_timeout = 1000 
+ 
 MAX_TOKENS_PER_CHUNK = (
     1000  # if text is more than this many tokens, we'll break it up into
 )
@@ -20,7 +21,7 @@ MAX_TOKENS_PER_CHUNK = (
 def get_completion(
     prompt: str,
     system_message: str = "You are a helpful assistant.",
-    model: str = "gpt-4-turbo",
+    model: str = "deepseek-chat",
     temperature: float = 0.3,
     json_mode: bool = False,
 ) -> Union[str, dict]:
@@ -664,7 +665,7 @@ def translate(
         ic(token_size)
 
         text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            model_name="gpt-4",
+            model_name="deepseek-chat",
             chunk_size=token_size,
             chunk_overlap=0,
         )
@@ -676,3 +677,27 @@ def translate(
         )
 
         return "".join(translation_2_chunks)
+if __name__ == "__main__":
+    
+    source_lang, target_lang, country = "English", "Chinese", "China"
+
+    # 设置文本文件路径
+    file_path = r"D:\translation_agent\examples\sample-texts\sample-long1.txt"  # 确保这个文件在你的脚本同一目录下
+
+    # 读取源文本
+    with open(file_path, encoding="utf-8") as file:
+        source_text = file.read()
+
+    # 打印源文本
+    print(f"Source text:\n\n{source_text}\n------------\n")
+
+    # 调用 translate 函数进行翻译
+    translation = translate(
+        source_lang=source_lang,
+        target_lang=target_lang,
+        source_text=source_text,
+        country=country,
+    )
+
+    # 打印翻译结果
+    print(f"Translation:\n\n{translation}")
